@@ -7,7 +7,15 @@ async fn main() {
 
     loop {
         let (socket, _) = listener.accept().await.unwrap();
-        process(socket).await;
+        // PROBLEM: We are processing one request at a time
+        // process(socket).await;
+
+        // SOLUTION: let's use some tokio spawn
+        // this will spawn a new task for each inbound socket
+        // we NEED to move the socket in
+        let some_output = tokio::spawn(async move {
+            process(socket).await
+        });
     }
 }
 
